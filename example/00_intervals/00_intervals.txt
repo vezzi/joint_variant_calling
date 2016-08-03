@@ -1,0 +1,4 @@
+/lupus/proj/ngi2016003/nobackup/vezzi/SwedishReferenceGenomeProjects/develop/test/00_intervals/interval0001.intervals
+/lupus/proj/ngi2016003/nobackup/vezzi/SwedishReferenceGenomeProjects/develop/test/00_intervals/interval0002.intervals
+/lupus/proj/ngi2016003/nobackup/vezzi/SwedishReferenceGenomeProjects/develop/test/00_intervals/interval0003.intervals
+/lupus/proj/ngi2016003/nobackup/vezzi/SwedishReferenceGenomeProjects/develop/test/00_intervals/interval0004.intervals

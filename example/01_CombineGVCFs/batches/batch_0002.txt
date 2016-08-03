@@ -1,0 +1,3 @@
+/proj/ngi2016003/nobackup/NGI/ANALYSIS/P2652/piper_ngi/07_variant_calls/P2652_239.clean.dedup.recal.bam.genomic.vcf.gz
+/proj/ngi2016003/nobackup/NGI/ANALYSIS/P2655/piper_ngi/07_variant_calls/P2655_234.clean.dedup.recal.bam.genomic.vcf.gz
+/proj/ngi2016003/nobackup/NGI/ANALYSIS/P2652/piper_ngi/07_variant_calls/P2652_244.clean.dedup.recal.bam.genomic.vcf.gz
