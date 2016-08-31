@@ -38,8 +38,8 @@ def check_configuration():
             return False
 
     #now at least I know all keys are present
-    if CONFIG["samples"] is None and CONFIG["projects"] is None:
-        print "ERROR: at least one one between projects and/or  samples must contain a list"
+    if CONFIG["samples"] is None and CONFIG["projects"] is None and not os.path.exists("00_samples.txt"):
+        print "ERROR: at least one one between projects and/or  samples must contain a list. In alternative specify the file 00_"
         return False
     #if project is not none than uppmax-project need do be specifed
     if CONFIG["projects"] is not None and CONFIG["uppmax_projects"] is None:
@@ -95,11 +95,11 @@ def main(args):
         sys.exit("ERROR: --resume  specified, however 00_samples.txt found. Please if you want to resume analysis, remove/move 00_samples.txt, 02_GenotypeGVCF, 03_ ... ")
     if os.path.exists("00_samples.txt"):
         print "WARNING: file 00_samples.txt exists, I will replace samples in config file with those stored in this file."
-        #delete samples sotred in previous step
+        #delete samples sorted in previous step
         CONFIG["samples_JC"] = []
         with open("00_samples.txt", "r") as samplesFile:
             for sample in samplesFile:
-                CONFIG["samples_JC"].append(sample)
+                CONFIG["samples_JC"].append(sample.rstrip())
     elif not args.resume:
         #otherwise create the file and store the samples
         with open("00_samples.txt", "w") as samplesFile:
