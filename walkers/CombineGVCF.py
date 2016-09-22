@@ -146,7 +146,15 @@ def CombineGVCFs():
     cwd = os.getcwd()
     if os.path.isdir(os.path.join(cwd, "01_CombineGVCFs")):
         print "WARNING: 01_CombineGVCFs already present, assuming this step has been completed with success."
-        return sbatch_files
+        #I need to set batch number
+        number_of_processed_samples = 0
+        for sample in CONFIG["samples_JC"]:
+            number_of_processed_samples += 1
+            if number_of_processed_samples % CONFIG["batch_size"] == 0:
+                CONFIG["batch_number"] += 1
+        if number_of_processed_samples % CONFIG["batch_size"] == 0:
+            CONFIG["batch_number"] -= 1
+        return []
     else:
         #create the folder structure
         os.mkdir(os.path.join(cwd, "01_CombineGVCFs"))
@@ -191,6 +199,13 @@ def create_batches(samples):
             CONFIG["batch_number"] += 1
             current_batch = []
     if len(current_batch) != 0:
+        if len(CONFIG["intervals_list"]) == 0:
+            sbatch_file = build_CombineGVCFs_sbatch(working_dir, CONFIG["batch_number"], current_batch, CONFIG["scratch"], interval=None)
+            sbatch_files.append(sbatch_file)
+        else:
+            for interval in CONFIG["intervals_list"]:
+                sbatch_file = build_CombineGVCFs_sbatch(working_dir, CONFIG["batch_number"], current_batch, CONFIG["scratch"], interval)
+                sbatch_files.append(sbatch_file)
         sbatch_file = os.path.join(cwd, "01_CombineGVCFs", "batches", "batch_{0:04d}.txt".format(CONFIG["batch_number"]))
         with open(sbatch_file, "w") as batch_file:
             for element in current_batch:
@@ -198,14 +213,6 @@ def create_batches(samples):
     else:
         #decrement by one, special case if last batch has exactly batch_size samples
         CONFIG["batch_number"] -= 1
-        
-    #I can build the sbatch file now, I need to check if I am working with genomics intervals or not
-    if len(CONFIG["intervals_list"]) == 0:
-        sbatch_file = build_CombineGVCFs_sbatch(working_dir, CONFIG["batch_number"], current_batch, CONFIG["scratch"], interval=None)
-        sbatch_files.append(sbatch_file)
-    else:
-        for interval in CONFIG["intervals_list"]:
-            sbatch_file = build_CombineGVCFs_sbatch(working_dir, CONFIG["batch_number"], current_batch, CONFIG["scratch"], interval)
-            sbatch_files.append(sbatch_file)
+
     return sbatch_files
 

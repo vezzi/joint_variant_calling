@@ -25,101 +25,76 @@ def sbatch_header(time="1-00:00:00", uppmax_project="ngi2016003", sbatch_name="S
     return sbatch_header
 
 
-def merge_snps_and_indels():
+def merge_snps_and_indels(step, jobs_id=None):
     cwd = os.getcwd()
-    if os.path.isdir(os.path.join(cwd, "01_merge_snp_indels")):
-        print "WARNING: 01_merge_snp_indels already present, assuming this step has been completed with success."
+    if os.path.isdir(os.path.join(cwd, step)):
+        print "WARNING: {} already present, assuming this step has been completed with success.".format(step)
         return
     #create the folder structure
-    os.mkdir(os.path.join(cwd, "01_merge_snp_indels"))
+    os.mkdir(os.path.join(cwd, step))
 
-    sbatch_command = sbatch_header(sbatch_name="merge_snp_indels", cwd=os.path.join(cwd, "01_merge_snp_indels"))
+    sbatch_command = sbatch_header(sbatch_name=step, cwd=os.path.join(cwd, step))
     sbatch_command += "java -Xmx250g -jar {} -T CombineVariants  \\\n".format(CONFIG["GATK"])
     sbatch_command += "-R {} \\\n".format(CONFIG["reference"])
     sbatch_command += "-nt 16  \\\n"
     sbatch_command += "--variant:snps {} \\\n".format(CONFIG["popSNPs"])
     sbatch_command += "--variant:indels {} \\\n".format(CONFIG["popINDELs"])
     sbatch_command += "-L {} \\\n".format(CONFIG["intervals"])
-    output = os.path.join(cwd, "01_merge_snp_indels", "SRG_joincalled.snp.indels.vcf.gz")
+    output = os.path.join(cwd, "01_merge_snp_indels", "SGP_joincalled.snp.indels.vcf.gz")
     sbatch_command += "-o {} \\\n".format(output)
     sbatch_command += "-genotypeMergeOptions PRIORITIZE \\\n"
     sbatch_command += "-priority snps,indels \\\n"
     sbatch_command += "\n"
-    with open(os.path.join(cwd, "01_merge_snp_indels", "00_merge_snp_indels.sbatch"), "w") as MERGE:
+    with open(os.path.join(cwd, step, "{}.sbatch".format(step)), "w") as MERGE:
         MERGE.write(sbatch_command)
 
-    slurm_jobs_id = submit_jobs([os.path.join(cwd, "01_merge_snp_indels", "00_merge_snp_indels.sbatch")])
+    slurm_jobs_id = submit_jobs([os.path.join(cwd, step, "{}.sbatch".format(step))], jobs_id)
     return slurm_jobs_id
 
-def select_1KGP():
+
+def select(step , vcf_in, vcf_out, options, jobs_id=None):
     cwd = os.getcwd()
-    if os.path.isdir(os.path.join(cwd, "02_select_variants_1KGP")):
-        print "WARNING: 02_select_variants_1KGP already present, assuming this step has been completed with success."
+    if os.path.isdir(os.path.join(cwd, step)):
+        print "WARNING: {} already present, assuming this step has been completed with success.".format(step)
         return
     #create the folder structure
-    os.mkdir(os.path.join(cwd, "02_select_variants_1KGP"))
+    os.mkdir(os.path.join(cwd, step))
 
-    sbatch_command = sbatch_header(sbatch_name="select_variants_1KGP", cwd=os.path.join(cwd, "02_select_variants_1KGP"))
+    sbatch_command = sbatch_header(sbatch_name=step, cwd=os.path.join(cwd, step))
     sbatch_command += "java -Xmx250g -jar {} -T SelectVariants  \\\n".format(CONFIG["GATK"])
     sbatch_command += "-R {} \\\n".format(CONFIG["reference"])
     sbatch_command += "-nt 16  \\\n"
-    sbatch_command += "-V {} \\\n".format(CONFIG["1KGP_VCF"])
+    sbatch_command += "-V {} \\\n".format(vcf_in)
     sbatch_command += "-L {} \\\n".format(CONFIG["intervals"])
-    output = os.path.join(cwd, "02_select_variants_1KGP", "1KGP_selected.snp.indels.vcf.gz")
+    output = os.path.join(cwd, step, vcf_out)
     sbatch_command += "-o {} \\\n".format(output)
+    for option in options:
+        sbatch_command += "{} \\\n".format(option)
     sbatch_command += "\n"
-    with open(os.path.join(cwd, "02_select_variants_1KGP", "00_select_variants_1KGP.sbatch"), "w") as SELECT:
+    with open(os.path.join(cwd, step, "{}.sbatch".format(step)), "w") as SELECT:
         SELECT.write(sbatch_command)
 
-    slurm_jobs_id = submit_jobs([os.path.join(cwd, "02_select_variants_1KGP", "00_select_variants_1KGP.sbatch")])
+    slurm_jobs_id = submit_jobs([os.path.join(cwd, step, "{}.sbatch".format(step))], jobs_id)
     return slurm_jobs_id
 
 
-def select_SGP(jobs_id):
+def merge_with_1KGP(step, vcf_one, vcf_two, jobs_id):
     cwd = os.getcwd()
-    if os.path.isdir(os.path.join(cwd, "03_select_variants_SGP")):
-        print "WARNING: 03_select_variants_SGP already present, assuming this step has been completed with success."
+    if os.path.isdir(os.path.join(cwd, step)):
+        print "WARNING: {} already present, assuming this step has been completed with success.".format(step)
         return
     #create the folder structure
-    os.mkdir(os.path.join(cwd, "03_select_variants_SGP"))
-
-    sbatch_command = sbatch_header(sbatch_name="select_variants_SGP", cwd=os.path.join(cwd, "03_select_variants_SGP"))
-    sbatch_command +=  "java -Xmx250g -jar {} -T SelectVariants  \\\n".format(CONFIG["GATK"])
-    sbatch_command += "-R {} \\\n".format(CONFIG["reference"])
-    sbatch_command += "-nt 16  \\\n"
-    sbatch_command += "-V {} \\\n".format(os.path.join(cwd, "01_merge_snp_indels", "SRG_joincalled.snp.indels.vcf.gz"))
-    sbatch_command += "-L {} \\\n".format(CONFIG["intervals"])
-    output = os.path.join(cwd, "03_select_variants_SGP", "SRG_joincalled.filtered.snp.indels.vcf.gz")
-    sbatch_command += "-o {} \\\n".format(output)
-    sbatch_command += "--restrictAllelesTo BIALLELIC \\\n"
-    sbatch_command += "--excludeFiltered \\\n"
-
-    sbatch_command += "\n"
-    with open(os.path.join(cwd, "03_select_variants_SGP", "00_select_variants_SGP.sbatch"), "w") as SELECT:
-        SELECT.write(sbatch_command)
-
-    slurm_jobs_id = submit_jobs([os.path.join(cwd, "03_select_variants_SGP", "00_select_variants_SGP.sbatch")], jobs_id)
-    return slurm_jobs_id
-
-
-
-def merge_with_1KGP(jobs_id):
-    cwd = os.getcwd()
-    if os.path.isdir(os.path.join(cwd, "04_merge_1KGP_SGP")):
-        print "WARNING: 04_merge_1KGP_SGP already present, assuming this step has been completed with success."
-        return
-    #create the folder structure
-    os.mkdir(os.path.join(cwd, "04_merge_1KGP_SGP"))
+    os.mkdir(os.path.join(cwd, step))
     
-    sbatch_command = sbatch_header(sbatch_name="merge_1KGP_SGP", cwd=os.path.join(cwd, "04_merge_1KGP_SGP"))
+    sbatch_command = sbatch_header(sbatch_name=step, cwd=os.path.join(cwd, step))
 
     sbatch_command +=  "java -Xmx250g -jar {} -T CombineVariants  \\\n".format(CONFIG["GATK"])
     sbatch_command += "-R {} \\\n".format(CONFIG["reference"])
     sbatch_command += "-nt 16  \\\n"
-    sbatch_command += "--variant:SGP {} \\\n".format(os.path.join(cwd, "03_select_variants_SGP", "SRG_joincalled.filtered.snp.indels.vcf.gz"))
-    sbatch_command += "--variant:1KGP {} \\\n".format(os.path.join(cwd, "02_select_variants_1KGP", "1KGP_selected.snp.indels.vcf.gz"))
+    sbatch_command += "--variant:SGP {} \\\n".format(vcf_one)
+    sbatch_command += "--variant:1KGP {} \\\n".format(vcf_two)
     sbatch_command += "-L {} \\\n".format(CONFIG["intervals"])
-    output = os.path.join(cwd, "04_merge_1KGP_SGP", "1KGP_SGP.vcf.gz")
+    output = os.path.join(cwd, step, "1KGP_SGP.vcf.gz")
     sbatch_command += "-o {} \n".format(output)
 
     sbatch_command += "\n"
@@ -128,49 +103,46 @@ def merge_with_1KGP(jobs_id):
     sbatch_command += "-R {} \\\n".format(CONFIG["reference"])
     sbatch_command += "-nt 16  \\\n"
     sbatch_command += "-L {} \\\n".format(CONFIG["intervals"])
-    sbatch_command += "-V {} \\\n".format(os.path.join(cwd, "04_merge_1KGP_SGP", "1KGP_SGP.vcf.gz"))
+    sbatch_command += "-V {} \\\n".format(os.path.join(cwd, step, "1KGP_SGP.vcf.gz"))
     sbatch_command += "-select \'set == \"Intersection\"\' \\\n"
-    output = os.path.join(cwd, "04_merge_1KGP_SGP", "1KGP_SGP.intersection.vcf.gz")
+    output = os.path.join(cwd, step, "1KGP_SGP.intersection.vcf.gz")
     sbatch_command += "-o {} \\\n".format(output)
     sbatch_command += "\n"
     
-    with open(os.path.join(cwd, "04_merge_1KGP_SGP", "00_merge_1KGP_SGP.sbatch"), "w") as INTERSECT:
+    with open(os.path.join(cwd, step, "{}.sbatch".format(step)), "w") as INTERSECT:
         INTERSECT.write(sbatch_command)
 
-    slurm_jobs_id = submit_jobs([os.path.join(cwd, "04_merge_1KGP_SGP", "00_merge_1KGP_SGP.sbatch")], jobs_id)
+    slurm_jobs_id = submit_jobs([os.path.join(cwd, step, "{}.sbatch".format(step))], jobs_id)
     return slurm_jobs_id
 
 
-def select_EU_samples():
+def select_EU_samples(step, vcf_all, jobs_id):
     cwd = os.getcwd()
-    if os.path.isdir(os.path.join(cwd, "08_EU_1KGP_SGP")):
-        print "WARNING: 08_EU_1KGP_SGP already present, assuming this step has been completed with success."
+    if os.path.isdir(os.path.join(cwd, step)):
+        print "WARNING: {} already present, assuming this step has been completed with success.".format(step)
         return
     #create the folder structure
-    os.mkdir(os.path.join(cwd, "08_EU_1KGP_SGP"))
+    os.mkdir(os.path.join(cwd, step))
 
-
-
-    sbatch_command = sbatch_header(sbatch_name="EU_1KGP_SGP", cwd=os.path.join(cwd, "08_EU_1KGP_SGP"))
+    sbatch_command = sbatch_header(sbatch_name=step, cwd=os.path.join(cwd, step))
     sbatch_command +=  "java -Xmx250g -jar {} -T SelectVariants  \\\n".format(CONFIG["GATK"])
     sbatch_command += "-R {} \\\n".format(CONFIG["reference"])
     sbatch_command += "-nt 16  \\\n"
-    sbatch_command += "-V {} \\\n".format(os.path.join(cwd, "04_merge_1KGP_SGP", "1KGP_SGP.intersection.vcf.gz"))
+    sbatch_command += "-V {} \\\n".format(vcf_all)
     sbatch_command += "-L {} \\\n".format(CONFIG["intervals"])
-    output = os.path.join(cwd, "08_EU_1KGP_SGP", "EU_1KGP_SGP.vcf.gz")
+    output = os.path.join(cwd, step, "EU_1KGP_SGP.vcf.gz")
     sbatch_command += "-o {} \\\n".format(output)
     sbatch_command += "-sf  {}\\\n".format(CONFIG["EU_samples"])
 
     sbatch_command += "\n"
-    with open(os.path.join(cwd, "08_EU_1KGP_SGP", "00_select_EU_1KGP_SGP.sbatch"), "w") as SELECT:
+    with open(os.path.join(cwd, step, "{}.sbatch".format(step)), "w") as SELECT:
         SELECT.write(sbatch_command)
-
-    slurm_jobs_id = submit_jobs([os.path.join(cwd, "08_EU_1KGP_SGP", "00_select_EU_1KGP_SGP.sbatch")])
+    slurm_jobs_id = submit_jobs([os.path.join(cwd, step, "{}.sbatch".format(step))], jobs_id)
     return slurm_jobs_id
 
 
 
-def runPCA(folder,output, VCF, populations):
+def runPCA(folder, output, VCF, populations, jobs_id=None):
     cwd = os.getcwd()
     if os.path.isdir(os.path.join(cwd, folder)):
         print "WARNING: {} already present, assuming this step has been completed with success.".format(folder)
@@ -193,42 +165,66 @@ def runPCA(folder,output, VCF, populations):
     sbatch_command += "\n"
     with open(os.path.join(cwd, folder, "00_runPCA.sbatch"), "w") as PCA:
         PCA.write(sbatch_command)
-    slurm_jobs_id = submit_jobs([os.path.join(cwd, folder, "00_runPCA.sbatch")])
+    slurm_jobs_id = submit_jobs([os.path.join(cwd, folder, "00_runPCA.sbatch")], jobs_id)
+
 
 
 
 def main(args):
     config = conf.load_yaml_config(args.configuration)
-    #merge SNPSs and INDELS
-    jobs_id_merge = merge_snps_and_indels()
-    #run QC on this set
-    jobs_id_select_SGP = select_SGP(jobs_id_merge)
-    #select same inteval for 1KGP
-    jobs_id_select = select_1KGP()
+    #01 merge SNPSs and INDELS for SweGene
+    jobs_id_merge = merge_snps_and_indels(step="01_merge_snp_indels")
+    SGP_raw_vcf   = os.path.join(os.getcwd(), "01_merge_snp_indels", "SGP_joincalled.snp.indels.vcf.gz")
+    #02 select subset of vcf file merged at step 01
+    jobs_id_select_SGP = select( step    = "02_select_variants_SGP" ,
+                                 vcf_in  = SGP_raw_vcf ,
+                                 vcf_out = "SGP_joincalled.filtered.snp.indels.vcf.gz" ,
+                                 options = ["--restrictAllelesTo BIALLELIC", "--excludeFiltered"],
+                                 jobs_id = jobs_id_merge
+                                 )
+    SGP_vcf = os.path.join(os.getcwd(), "02_select_variants_SGP", "SGP_joincalled.filtered.snp.indels.vcf.gz")
+    #03 select subset of 1KGP
+    jobs_id_select_1KGP = select(step    = "03_select_variants_1KGP" ,
+                                 vcf_in  =  CONFIG["1KGP_VCF"],
+                                 vcf_out = "1KGP_selected.snp.indels.vcf.gz" ,
+                                 options = [],
+                                 )
+    OneKGP_vcf = os.path.join(os.getcwd(), "03_select_variants_1KGP", "1KGP_selected.snp.indels.vcf.gz")
     #merge 1KGP and SGP
     jobs_dependencies = []
     if jobs_id_select_SGP is not None:
-        jobs_dependencies.append(jobs_id_select_SGP)
-    if jobs_id_select is not None:
-        jobs_dependencies.append(jobs_id_select)
+        jobs_dependencies.extend(jobs_id_select_SGP)
+    if jobs_id_select_1KGP is not None:
+        jobs_dependencies.extend(jobs_id_select_1KGP)
     if len(jobs_dependencies) == 0:
         jobs_dependencies = None
-    merge_with_1KGP(jobs_dependencies)
-    #now run PCA, specify which vcf and which population to work on
+
+    jobs_id_merge_1KGP_SGP = merge_with_1KGP(step="04_merge_1KGP_SGP", vcf_one=SGP_vcf, vcf_two=OneKGP_vcf, jobs_id=jobs_dependencies)
+    SGP_1KGP_vcf = os.path.join(os.getcwd(), "04_merge_1KGP_SGP", "1KGP_SGP.intersection.vcf.gz")
+
+    #select only EU samples from merged vcf file
+    jobs_id_select_EU = select_EU_samples(step="05_EU_1KGP_SGP", vcf_all=SGP_1KGP_vcf, jobs_id=jobs_id_merge_1KGP_SGP)
+    EU_SGP_1KGP_vcf   = os.path.join(os.getcwd(), "05_EU_1KGP_SGP", "EU_1KGP_SGP.vcf.gz")
+
+    #now run PCA, specify: FOLDER, OUTPUT_NAME, VCF, POPLUATION, DEPENDECY_IDs
     cwd = os.getcwd()
-    SGPvcf = os.path.join(cwd,"03_select_variants_SGP", "SRG_joincalled.filtered.snp.indels.vcf.gz")
-    runPCA("05_PCA_SGP_only", "SGP",  SGPvcf, [CONFIG["SGP_population"]])
+    runPCA("06_PCA_SGP_only", "SGP",  SGP_vcf, [CONFIG["SGP_population"]], jobs_id_select_SGP)
+
     #now only for 1KGP
-    OneKGP_vcf = os.path.join(cwd, "02_select_variants_1KGP", "1KGP_selected.snp.indels.vcf.gz")
-    runPCA("06_PCA_1KGP_only", "1KGP",  OneKGP_vcf, [CONFIG["1KGP_superpopulation"]])
+    runPCA("07_PCA_1KGP_only", "1KGP",  OneKGP_vcf, [CONFIG["1KGP_superpopulation"]], jobs_id_select_1KGP)
+
     #now for the mix one
-    SGP_1KGP = os.path.join(cwd, "04_merge_1KGP_SGP", "1KGP_SGP.intersection.vcf.gz")
-    runPCA("07_PCA_SGP_1KGP", "SGP_1KGP",  SGP_1KGP, [CONFIG["1KGP_superpopulation"], CONFIG["SGP_superpopulation"]])
-    #select only EU samples from merges vcf file
-    select_EU_samples()
-    #run PCA on this set
-    EU_SGP_1KGP = os.path.join(cwd, "08_EU_1KGP_SGP", "EU_1KGP_SGP.vcf.gz")
-    runPCA("09_PCA_EU_SGP_1KGP", "EU_SGP_1KGP",  EU_SGP_1KGP, [CONFIG["1KGP_superpopulation"], CONFIG["SGP_superpopulation"]])
+    runPCA("08_PCA_SGP_1KGP", "SGP_1KGP",  SGP_1KGP_vcf, [CONFIG["1KGP_superpopulation"], CONFIG["SGP_superpopulation"]], jobs_id_merge_1KGP_SGP)
+
+    #run PCA EU population only
+    runPCA("09_PCA_EU_SGP_1KGP", "EU_SGP_1KGP",  EU_SGP_1KGP_vcf, [CONFIG["1KGP_population"], CONFIG["SGP_superpopulation"]], jobs_id_select_EU)
+
+
+
+#eigenvec_table <- read.table('SGP_1KGP_PCA.pop.eigenvec')
+#plot(eigenvec_table[4:5], col=factor(eigenvec_table[,3]), main="PCA", xlab="first component", ylab="second component")
+#legend("bottomright", legend=levels(factor(eigenvec_table[,3])), text.col=seq_along(levels(factor(eigenvec_table[,3]))), pch=19, col=seq_along(levels(factor(eigenvec_table[,3]))) )
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser("""Scripts performs standard validation steps on joint calling results""")
