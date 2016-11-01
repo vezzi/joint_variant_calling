@@ -2,10 +2,10 @@
 #SBATCH -A ngi2016003
 #SBATCH -p node
 #SBATCH -n 16
-#SBATCH -t 10-00:00:00
+#SBATCH -t 2-00:00:00
 #SBATCH -J VQSR_SNP
-#SBATCH -o /lupus/proj/ngi2016003/nobackup/vezzi/SwedishReferenceGenomeProjects/SwedishGenomeReference_16_09_20/05_VariantRecalibrator/std_out/VQSR_SNP.out
-#SBATCH -e /lupus/proj/ngi2016003/nobackup/vezzi/SwedishReferenceGenomeProjects/SwedishGenomeReference_16_09_20/05_VariantRecalibrator/std_err/VQSR_SNP.err
+#SBATCH -o /lupus/proj/ngi2016003/nobackup/vezzi/SwedishReferenceGenomeProjects/SwedishGenomeReference_16_09_26/05_VariantRecalibrator/std_out/VQSR_SNP.out
+#SBATCH -e /lupus/proj/ngi2016003/nobackup/vezzi/SwedishReferenceGenomeProjects/SwedishGenomeReference_16_09_26/05_VariantRecalibrator/std_err/VQSR_SNP.err
 module load bioinfo-tools
 module load GATK/3.5.0
 java -Xmx64g -jar /sw/apps/bioinfo/GATK/3.5.0/GenomeAnalysisTK.jar -T VariantRecalibrator  \
@@ -23,7 +23,7 @@ java -Xmx64g -jar /sw/apps/bioinfo/GATK/3.5.0/GenomeAnalysisTK.jar -T VariantRec
 -an SOR \
 -an DP \
 -mode SNP \
--input /lupus/proj/ngi2016003/nobackup/vezzi/SwedishReferenceGenomeProjects/SwedishGenomeReference_16_09_20/04_SelectVariants/VCF/SweGen_joincalled.snp.g.vcf.gz \
--recalFile /lupus/proj/ngi2016003/nobackup/vezzi/SwedishReferenceGenomeProjects/SwedishGenomeReference_16_09_20/05_VariantRecalibrator/VCF/SweGen_joincalled.snp.recal \
--tranchesFile /lupus/proj/ngi2016003/nobackup/vezzi/SwedishReferenceGenomeProjects/SwedishGenomeReference_16_09_20/05_VariantRecalibrator/VCF/SweGen_joincalled.snp.tranches 
+-input /lupus/proj/ngi2016003/nobackup/vezzi/SwedishReferenceGenomeProjects/SwedishGenomeReference_16_09_26/04_SelectVariants/VCF/SweGen_joincalled.snp.g.vcf.gz \
+-recalFile /lupus/proj/ngi2016003/nobackup/vezzi/SwedishReferenceGenomeProjects/SwedishGenomeReference_16_09_26/05_VariantRecalibrator/VCF/SweGen_joincalled.snp.recal \
+-tranchesFile /lupus/proj/ngi2016003/nobackup/vezzi/SwedishReferenceGenomeProjects/SwedishGenomeReference_16_09_26/05_VariantRecalibrator/VCF/SweGen_joincalled.snp.tranches 
 
