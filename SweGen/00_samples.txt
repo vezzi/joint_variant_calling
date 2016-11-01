@@ -1,3 +1,4 @@
+/proj/ngi2016003/nobackup/NGI/ANALYSIS/P4601/piper_ngi/07_variant_calls/P4601_238.clean.dedup.recal.bam.genomic.vcf.gz
 /proj/ngi2016003/nobackup/NGI/ANALYSIS/P2652/piper_ngi/07_variant_calls/P2652_180.clean.dedup.recal.bam.genomic.vcf.gz
 /proj/ngi2016003/nobackup/NGI/ANALYSIS/P2652/piper_ngi/07_variant_calls/P2652_192.clean.dedup.recal.bam.genomic.vcf.gz
 /proj/ngi2016003/nobackup/NGI/ANALYSIS/P2652/piper_ngi/07_variant_calls/P2652_215.clean.dedup.recal.bam.genomic.vcf.gz
@@ -461,7 +462,6 @@
 /proj/ngi2016003/nobackup/NGI/ANALYSIS/P4302/piper_ngi/07_variant_calls/P4302_173.clean.dedup.recal.bam.genomic.vcf.gz
 /proj/ngi2016003/nobackup/NGI/ANALYSIS/P4302/piper_ngi/07_variant_calls/P4302_124.clean.dedup.recal.bam.genomic.vcf.gz
 /proj/ngi2016003/nobackup/NGI/ANALYSIS/P4302/piper_ngi/07_variant_calls/P4302_218.clean.dedup.recal.bam.genomic.vcf.gz
-/proj/ngi2016003/nobackup/NGI/ANALYSIS/P4302/piper_ngi/07_variant_calls/P4302_119.clean.dedup.recal.bam.genomic.vcf.gz
 /proj/ngi2016003/nobackup/NGI/ANALYSIS/P4302/piper_ngi/07_variant_calls/P4302_157.clean.dedup.recal.bam.genomic.vcf.gz
 /proj/ngi2016003/nobackup/NGI/ANALYSIS/P4302/piper_ngi/07_variant_calls/P4302_167.clean.dedup.recal.bam.genomic.vcf.gz
 /proj/ngi2016003/nobackup/NGI/ANALYSIS/P4302/piper_ngi/07_variant_calls/P4302_155.clean.dedup.recal.bam.genomic.vcf.gz

@@ -2,10 +2,10 @@
 #SBATCH -A ngi2016003
 #SBATCH -p node
 #SBATCH -n 16
-#SBATCH -t 10-00:00:00
+#SBATCH -t 2-00:00:00
 #SBATCH -J VQSR_INDEL
-#SBATCH -o /lupus/proj/ngi2016003/nobackup/vezzi/SwedishReferenceGenomeProjects/SwedishGenomeReference_16_09_20/05_VariantRecalibrator/std_out/VQSR_INDEL.out
-#SBATCH -e /lupus/proj/ngi2016003/nobackup/vezzi/SwedishReferenceGenomeProjects/SwedishGenomeReference_16_09_20/05_VariantRecalibrator/std_err/VQSR_INDEL.err
+#SBATCH -o /lupus/proj/ngi2016003/nobackup/vezzi/SwedishReferenceGenomeProjects/SwedishGenomeReference_16_09_26/05_VariantRecalibrator/std_out/VQSR_INDEL.out
+#SBATCH -e /lupus/proj/ngi2016003/nobackup/vezzi/SwedishReferenceGenomeProjects/SwedishGenomeReference_16_09_26/05_VariantRecalibrator/std_err/VQSR_INDEL.err
 module load bioinfo-tools
 module load GATK/3.5.0
 java -Xmx64g -jar /sw/apps/bioinfo/GATK/3.5.0/GenomeAnalysisTK.jar -T VariantRecalibrator  \
@@ -21,7 +21,7 @@ java -Xmx64g -jar /sw/apps/bioinfo/GATK/3.5.0/GenomeAnalysisTK.jar -T VariantRec
 -an ReadPosRankSum \
 -an MQRankSum \
 -mode INDEL \
--input /lupus/proj/ngi2016003/nobackup/vezzi/SwedishReferenceGenomeProjects/SwedishGenomeReference_16_09_20/04_SelectVariants/VCF/SweGen_joincalled.indel.g.vcf.gz \
--recalFile /lupus/proj/ngi2016003/nobackup/vezzi/SwedishReferenceGenomeProjects/SwedishGenomeReference_16_09_20/05_VariantRecalibrator/VCF/SweGen_joincalled.indel.recal \
--tranchesFile /lupus/proj/ngi2016003/nobackup/vezzi/SwedishReferenceGenomeProjects/SwedishGenomeReference_16_09_20/05_VariantRecalibrator/VCF/SweGen_joincalled.indel.tranches 
+-input /lupus/proj/ngi2016003/nobackup/vezzi/SwedishReferenceGenomeProjects/SwedishGenomeReference_16_09_26/04_SelectVariants/VCF/SweGen_joincalled.indel.g.vcf.gz \
+-recalFile /lupus/proj/ngi2016003/nobackup/vezzi/SwedishReferenceGenomeProjects/SwedishGenomeReference_16_09_26/05_VariantRecalibrator/VCF/SweGen_joincalled.indel.recal \
+-tranchesFile /lupus/proj/ngi2016003/nobackup/vezzi/SwedishReferenceGenomeProjects/SwedishGenomeReference_16_09_26/05_VariantRecalibrator/VCF/SweGen_joincalled.indel.tranches 
 
