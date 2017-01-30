@@ -3,6 +3,7 @@ import random
 import re
 
 from utils.config import CONFIG
+from common import slurm_header
 
 
 def build_CombineGVCFs_sbatch(working_dir, batch, current_batch, scratch=False, interval=None):
@@ -28,16 +29,9 @@ def build_CombineGVCFs_sbatch(working_dir, batch, current_batch, scratch=False, 
     #create the sbatch file to analyse the current batch of samples
     sbatch_file = os.path.join(working_dir, "sbatch", "{}.sbatch".format(job_name))
     with open(sbatch_file, "w") as CombineGVCFsFile:
-        CombineGVCFsFile.write("#!/bin/bash -l\n")
-        CombineGVCFsFile.write("#SBATCH -A ngi2016003\n")
-        CombineGVCFsFile.write("#SBATCH -p node\n")
-        CombineGVCFsFile.write("#SBATCH -n 8\n")
-        CombineGVCFsFile.write("#SBATCH -t 10-00:00:00\n")
-        CombineGVCFsFile.write("#SBATCH -J {}\n".format(job_name))
-        CombineGVCFsFile.write("#SBATCH -o {}/std_out/{}.out\n".format(working_dir, job_name ))
-        CombineGVCFsFile.write("#SBATCH -e {}/std_err/{}.err\n".format(working_dir, job_name ))
-        CombineGVCFsFile.write("module load bioinfo-tools\n")
-        CombineGVCFsFile.write("module load GATK/3.5.0\n")
+        slurm = slurm_header(CONFIG["uppmax_project"], working_dir, job_name)
+        CombineGVCFsFile.write(slurm)
+        CombineGVCFsFile.write("\n")
         #rsync to scratch all samples
         if scratch:
             CombineGVCFsFile.write("mkdir -p $SNIC_TMP/{} \n".format(job_name)) # create tmp directory

@@ -5,6 +5,7 @@ import re
 
 from utils.config import CONFIG
 from common import atoi, natural_keys
+from common import slurm_header
 
 
 
@@ -23,16 +24,9 @@ def build_CatVariants_sbatch(working_dir, variants_dir,  scratch=False):
     #create the sbatch file to merge all varaints or to copy the already single one
     sbatch_file = os.path.join(working_dir, "sbatch", "{}.sbatch".format(job_name))
     with open(sbatch_file, "w") as CatVariants:
-        CatVariants.write("#!/bin/bash -l\n")
-        CatVariants.write("#SBATCH -A ngi2016003\n")
-        CatVariants.write("#SBATCH -p node\n")
-        CatVariants.write("#SBATCH -n 16\n")
-        CatVariants.write("#SBATCH -t 10-00:00:00\n")
-        CatVariants.write("#SBATCH -J {}\n".format(job_name))
-        CatVariants.write("#SBATCH -o {}/std_out/{}.out\n".format(working_dir, job_name ))
-        CatVariants.write("#SBATCH -e {}/std_err/{}.err\n".format(working_dir, job_name ))
-        CatVariants.write("module load bioinfo-tools\n")
-        CatVariants.write("module load GATK/3.5.0\n")
+        slurm = slurm_header(CONFIG["uppmax_project"], working_dir, job_name)
+        CatVariants.write(slurm)
+        CatVariants.write("\n")
         
         if len(CONFIG["intervals_list"]) == 0:
             #in this case I need only to copy the already single file

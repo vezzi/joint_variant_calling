@@ -2,7 +2,7 @@ import sys, os, glob
 import re
 
 from utils.config import CONFIG
-
+from common import slurm_header
 
 
 def build_GenotypeGVCFs_sbatch(working_dir, combined_gvcf_files, scratch=False, interval=None):
@@ -28,16 +28,9 @@ def build_GenotypeGVCFs_sbatch(working_dir, combined_gvcf_files, scratch=False, 
     #create the sbatch file to analyse the current batch of samples
     sbatch_file = os.path.join(working_dir, "sbatch", "{}.sbatch".format(job_name))
     with open(sbatch_file, "w") as GenotypeGVCFs:
-        GenotypeGVCFs.write("#!/bin/bash -l\n")
-        GenotypeGVCFs.write("#SBATCH -A ngi2016003\n")
-        GenotypeGVCFs.write("#SBATCH -p node\n")
-        GenotypeGVCFs.write("#SBATCH -n 16\n")
-        GenotypeGVCFs.write("#SBATCH -t 10-00:00:00\n")
-        GenotypeGVCFs.write("#SBATCH -J {}\n".format(job_name))
-        GenotypeGVCFs.write("#SBATCH -o {}/std_out/{}.out\n".format(working_dir, job_name ))
-        GenotypeGVCFs.write("#SBATCH -e {}/std_err/{}.err\n".format(working_dir, job_name ))
-        GenotypeGVCFs.write("module load bioinfo-tools\n")
-        GenotypeGVCFs.write("module load GATK/3.5.0\n")
+        slurm = slurm_header(CONFIG["uppmax_project"], working_dir, job_name)
+        GenotypeGVCFs.write(slurm)
+        GenotypeGVCFs.write("\n")
         #rsync to scratch all samples
         if scratch:
             GenotypeGVCFs.write("mkdir -p $SNIC_TMP/{} \n".format(job_name)) # create tmp directory

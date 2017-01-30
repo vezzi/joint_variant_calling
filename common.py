@@ -35,6 +35,19 @@ def find_VCF(project, uppmax_project):
     return samples
 
 
+def slurm_header(uppmax_project, job_name, working_dir):
+    header  = "#!/bin/bash -l\n"
+    header += "#SBATCH -A {}\n".format(uppmax_project)
+    header += "#SBATCH -p node\n"
+    header += "#SBATCH -n 16\n"
+    header += "#SBATCH -t 10-00:00:00\n"
+    header += "#SBATCH -J {}\n".format(job_name)
+    header += "#SBATCH -o {}/std_out/{}.out\n".format(working_dir, job_name )
+    header += "#SBATCH -e {}/std_err/{}.err\n".format(working_dir, job_name )
+    header += "module load bioinfo-tools\n"
+    header += "module load GATK/3.5.0\n"
+    return header
+
 
 
 def submit_jobs(sbatch_files, pending_jobs = None):
