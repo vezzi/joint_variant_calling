@@ -57,7 +57,7 @@ walkers:
              - "-an DP"
              - "-an InbreedingCoeff"
              - "-mode SNP"
-             - "tranche 100.0 -tranche 99.9 -tranche 99.0 -tranche 90.0 "
+             - "-tranche 100.0 -tranche 99.9 -tranche 99.0 -tranche 90.0 "
         - INDEL:
               - "--maxGaussians 4"
               - "-resource:mills,known=false,training=true,truth=true,prior=12.0 /lupus/ngi/resources/piper/gatk_bundle/2.8/b37/Mills_and_1000G_gold_standard.indels.b37.vcf" 
