@@ -29,7 +29,7 @@ def build_ApplyRecalibration_sbatch(working_dir, variant_raw,  recal, tranches, 
     #create the sbatch file to merge all varaints or to copy the already single one
     sbatch_file = os.path.join(working_dir, "sbatch", "{}.sbatch".format(job_name))
     with open(sbatch_file, "w") as ApplyRecalibration:
-        slurm = slurm_header(CONFIG["uppmax_project"], working_dir, job_name)
+	slurm = slurm_header(CONFIG["uppmax_project"],  job_name, working_dir)
         ApplyRecalibration.write(slurm)
         ApplyRecalibration.write("\n")
         

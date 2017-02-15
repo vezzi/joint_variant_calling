@@ -44,8 +44,11 @@ def slurm_header(uppmax_project, job_name, working_dir):
     header += "#SBATCH -J {}\n".format(job_name)
     header += "#SBATCH -o {}/std_out/{}.out\n".format(working_dir, job_name )
     header += "#SBATCH -e {}/std_err/{}.err\n".format(working_dir, job_name )
+    header += "echo hostname=`hostname`\n"
+    header += "echo SLURM_JOB_ID=$SLURM_JOB_ID\n"
     header += "module load bioinfo-tools\n"
     header += "module load GATK/3.5.0\n"
+
     return header
 
 

@@ -29,7 +29,7 @@ def build_CombineGVCFs_sbatch(working_dir, batch, current_batch, scratch=False, 
     #create the sbatch file to analyse the current batch of samples
     sbatch_file = os.path.join(working_dir, "sbatch", "{}.sbatch".format(job_name))
     with open(sbatch_file, "w") as CombineGVCFsFile:
-        slurm = slurm_header(CONFIG["uppmax_project"], working_dir, job_name)
+        slurm = slurm_header(CONFIG["uppmax_project"], job_name, working_dir)
         CombineGVCFsFile.write(slurm)
         CombineGVCFsFile.write("\n")
         #rsync to scratch all samples
@@ -46,7 +46,7 @@ def build_CombineGVCFs_sbatch(working_dir, batch, current_batch, scratch=False, 
                 sample_name = os.path.basename(sample)
                 sample_path_dir = "$SNIC_TMP/{}/{}".format(job_name, sample_name)
             samples_string_input += "-V {} \\\n".format(sample_path_dir)
-        GATK_command= "java -Xmx200g -jar {} -T CombineGVCFs \\\n".format(CONFIG["GATK"])
+        GATK_command= "java -Xmx120g -jar {} -T CombineGVCFs \\\n".format(CONFIG["GATK"])
         for option in CONFIG["walkers"]["CombineGVCFs"]:
             GATK_command += "{} \\\n".format(option)
         #attach the samples I am going to work with

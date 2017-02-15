@@ -36,7 +36,7 @@ def build_VQSR_sbatch(working_dir,  variant_raw, scratch=False):
     #create the sbatch file to merge all varaints or to copy the already single one
     sbatch_file = os.path.join(working_dir, "sbatch", "{}.sbatch".format(job_name))
     with open(sbatch_file, "w") as VQSR:
-        slurm = slurm_header(CONFIG["uppmax_project"], working_dir, job_name)
+        slurm = slurm_header(CONFIG["uppmax_project"],  job_name, working_dir)
         VQSR.write(slurm)
         VQSR.write("\n")
         ##############################################
@@ -87,7 +87,7 @@ def build_VQSR_sbatch(working_dir,  variant_raw, scratch=False):
             GATK_command += "-tranchesFile $SNIC_TMP/{}/VCF/{} \\\n".format(job_name, tranches_file_name_snps)
         else:
             GATK_command += "-recalFile {}/VCF/{} \\\n".format(working_dir, racal_file_name_snps)
-            GATK_command += "-tranchesFile {}/VCF/{} \n\n".format(working_dir, tranches_file_name_snps)
+            GATK_command += "-tranchesFile {}/VCF/{} \\\n".format(working_dir, tranches_file_name_snps)
         GATK_command += GATK_input
         #add standard options
         for option in CONFIG["walkers"]["ApplyRecalibration"]:
@@ -114,9 +114,9 @@ def build_VQSR_sbatch(working_dir,  variant_raw, scratch=False):
         ################################################
         #### compute recalibration tables for INDELS ###
         ################################################
-        GATK_input = "-input {}/VCF/{} \n\n".format(working_dir, variant_recal_snp_raw_indels)
+        GATK_input = "-input {}/VCF/{} \\\n".format(working_dir, variant_recal_snp_raw_indels)
         if scratch:
-            GATK_input  = "-input $SNIC_TMP/{}/VCF/{} \n\n".format(job_name, variant_recal_snp_raw_indels)
+            GATK_input  = "-input $SNIC_TMP/{}/VCF/{} \\\n".format(job_name, variant_recal_snp_raw_indels)
         GATK_command  = "java -Xmx64g -jar {} -T VariantRecalibrator  \\\n".format(CONFIG["GATK"])
         #add standard options
         for option in CONFIG["walkers"]["VariantRecalibrator"]:
@@ -150,10 +150,10 @@ def build_VQSR_sbatch(working_dir,  variant_raw, scratch=False):
         #### GATK_input is the same
         if scratch:
             GATK_command += "-recalFile $SNIC_TMP/{}/VCF/{} \\\n".format(job_name, racal_file_name_indels)
-            GATK_command += "-tranchesFile $SNIC_TMP/{}/VCF/{} \n\n".format(job_name, tranches_file_name_indels)
+            GATK_command += "-tranchesFile $SNIC_TMP/{}/VCF/{} \\\n".format(job_name, tranches_file_name_indels)
         else:
             GATK_command += "-recalFile {}/VCF/{} \\\n".format(working_dir, racal_file_name_indels)
-            GATK_command += "-tranchesFile {}/VCF/{} \n\n".format(working_dir, tranches_file_name_indels)
+            GATK_command += "-tranchesFile {}/VCF/{} \\\n".format(working_dir, tranches_file_name_indels)
         GATK_command += GATK_input
         #add standard options
         for option in CONFIG["walkers"]["ApplyRecalibration"]:

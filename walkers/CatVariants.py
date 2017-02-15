@@ -24,7 +24,7 @@ def build_CatVariants_sbatch(working_dir, variants_dir,  scratch=False):
     #create the sbatch file to merge all varaints or to copy the already single one
     sbatch_file = os.path.join(working_dir, "sbatch", "{}.sbatch".format(job_name))
     with open(sbatch_file, "w") as CatVariants:
-        slurm = slurm_header(CONFIG["uppmax_project"], working_dir, job_name)
+	slurm = slurm_header(CONFIG["uppmax_project"],  job_name, working_dir)
         CatVariants.write(slurm)
         CatVariants.write("\n")
         

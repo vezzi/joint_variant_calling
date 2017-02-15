@@ -28,7 +28,7 @@ def build_GenotypeGVCFs_sbatch(working_dir, combined_gvcf_files, scratch=False, 
     #create the sbatch file to analyse the current batch of samples
     sbatch_file = os.path.join(working_dir, "sbatch", "{}.sbatch".format(job_name))
     with open(sbatch_file, "w") as GenotypeGVCFs:
-        slurm = slurm_header(CONFIG["uppmax_project"], working_dir, job_name)
+        slurm = slurm_header(CONFIG["uppmax_project"],  job_name, working_dir)
         GenotypeGVCFs.write(slurm)
         GenotypeGVCFs.write("\n")
         #rsync to scratch all samples
