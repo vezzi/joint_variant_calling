@@ -5,6 +5,7 @@ import re
 
 from utils.config import CONFIG
 from common import atoi, natural_keys
+from common import slurm_header
 
 
 
@@ -26,16 +27,9 @@ def build_SelectVariants_sbatch(working_dir, variant_file, scratch=False):
     #create the sbatch file to merge all varaints or to copy the already single one
     sbatch_file = os.path.join(working_dir, "sbatch", "{}.sbatch".format(job_name))
     with open(sbatch_file, "w") as SelectVariants:
-        SelectVariants.write("#!/bin/bash -l\n")
-        SelectVariants.write("#SBATCH -A ngi2016003\n")
-        SelectVariants.write("#SBATCH -p node\n")
-        SelectVariants.write("#SBATCH -n 16\n")
-        SelectVariants.write("#SBATCH -t 10-00:00:00\n")
-        SelectVariants.write("#SBATCH -J {}\n".format(job_name))
-        SelectVariants.write("#SBATCH -o {}/std_out/{}.out\n".format(working_dir, job_name ))
-        SelectVariants.write("#SBATCH -e {}/std_err/{}.err\n".format(working_dir, job_name ))
-        SelectVariants.write("module load bioinfo-tools\n")
-        SelectVariants.write("module load GATK/3.5.0\n")
+	slurm = slurm_header(CONFIG["uppmax_project"],  job_name, working_dir)
+        SelectVariants.write(slurm)
+        SelectVariants.write("\n")
         
         if scratch:
             SelectVariants.write("mkdir -p $SNIC_TMP/{} \n".format(job_name)) # create tmp directory

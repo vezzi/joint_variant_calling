@@ -5,6 +5,7 @@ import re
 
 from utils.config import CONFIG
 from common import atoi, natural_keys
+from common import slurm_header
 
 
 
@@ -29,16 +30,9 @@ def build_VariantRecalibrator_sbatch(working_dir,  variant_raw, type, scratch=Fa
     #create the sbatch file to merge all varaints or to copy the already single one
     sbatch_file = os.path.join(working_dir, "sbatch", "{}.sbatch".format(job_name))
     with open(sbatch_file, "w") as VariantRecalibrator:
-        VariantRecalibrator.write("#!/bin/bash -l\n")
-        VariantRecalibrator.write("#SBATCH -A ngi2016003\n")
-        VariantRecalibrator.write("#SBATCH -p node\n")
-        VariantRecalibrator.write("#SBATCH -n 16\n")
-        VariantRecalibrator.write("#SBATCH -t 10-00:00:00\n")
-        VariantRecalibrator.write("#SBATCH -J {}\n".format(job_name))
-        VariantRecalibrator.write("#SBATCH -o {}/std_out/{}.out\n".format(working_dir, job_name ))
-        VariantRecalibrator.write("#SBATCH -e {}/std_err/{}.err\n".format(working_dir, job_name ))
-        VariantRecalibrator.write("module load bioinfo-tools\n")
-        VariantRecalibrator.write("module load GATK/3.5.0\n")
+        slurm = slurm_header(CONFIG["uppmax_project"],  job_name, working_dir)
+        VariantRecalibrator.write(slurm)
+        VariantRecalibrator.write("\n")
         
         if scratch:
             VariantRecalibrator.write("mkdir -p $SNIC_TMP/{} \n".format(job_name)) # create tmp directory

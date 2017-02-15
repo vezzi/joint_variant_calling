@@ -7,8 +7,6 @@ samples:
     - /proj/ngi2016003/nobackup/NGI/ANALYSIS/P2652/piper_ngi/07_variant_calls/P2652_239.clean.dedup.recal.bam.genomic.vcf.gz
     - /proj/ngi2016003/nobackup/NGI/ANALYSIS/P2652/piper_ngi/07_variant_calls/P2652_241.clean.dedup.recal.bam.genomic.vcf.gz
     - /proj/ngi2016003/nobackup/NGI/ANALYSIS/P2652/piper_ngi/07_variant_calls/P2652_244.clean.dedup.recal.bam.genomic.vcf.gz
-#Assumes NGI structure, i.e., /proj/{}/nobackup/NGI/ANALYSIS/{}/piper_ngi/07_variant_calls/".format(uppmax_project, project)
-projects:
 #path to a folder containing an .interval file for each interval we want to work on
 intervals: /proj/ngi2016003/nobackup/vezzi/SwedishReferenceGenomeProjects/develop/test/00_intervals
 #True if one wants to use scratch
@@ -20,9 +18,7 @@ batch_size: 4
 #how the output file names should be called
 output_header: "SRG"
 #uppmax project where one need to seach for samples (used only if projects are specified)
-uppmax_projects:
-    - ngi2016001
-    - ngi2016003
+uppmax_project: a201002
 #options for walkers
 #path to GATK
 GATK : "/sw/apps/bioinfo/GATK/3.5.0/GenomeAnalysisTK.jar"
@@ -59,8 +55,9 @@ walkers:
              - "-an FS"
              - "-an SOR"
              - "-an DP"
-#             - "-an InbreedingCoeff"
+             - "-an InbreedingCoeff"
              - "-mode SNP"
+             - "-tranche 100.0 -tranche 99.9 -tranche 99.0 -tranche 90.0 "
         - INDEL:
               - "--maxGaussians 4"
               - "-resource:mills,known=false,training=true,truth=true,prior=12.0 /lupus/ngi/resources/piper/gatk_bundle/2.8/b37/Mills_and_1000G_gold_standard.indels.b37.vcf" 
@@ -71,13 +68,14 @@ walkers:
               - "-an SOR" 
               - "-an ReadPosRankSum" 
               - "-an MQRankSum" 
-#              - "-an InbreedingCoeff"
+              - "-an InbreedingCoeff"
               - "-mode INDEL"
+              - "-tranche 100.0 -tranche 99.9 -tranche 99.0 -tranche 90.0"
     ApplyRecalibration:
         - "-R /lupus/ngi/resources/piper/gatk_bundle/2.8/b37/human_g1k_v37.fasta" 
         - "-nt 16"
         - SNP:
-              - "--ts_filter_level 99.5"
+              - "--ts_filter_level 99.0"
               - "-mode SNP"
         - INDEL:
               - "--ts_filter_level 99.0"
