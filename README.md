@@ -3,9 +3,12 @@ Python package to run Join Calling on population at NGI (National Genomics Infra
 The script `joint_variant_calling.py` implements the GATK-Workflow described in 
 https://www.broadinstitute.org/gatk/guide/article?id=3893
 
-Samples to be be join called can be specified in three ways:
+With option `--mixed-positions` VQSR step is executed following best-practice described in
+http://gatkforums.broadinstitute.org/gatk/discussion/2805/howto-recalibrate-variant-quality-scores-run-vqsr
+in order to avoid the problem with MIXED positions (i.e., position where an indel overlaps a SNP). This is the mode used to run SweGen dataset.
+
+Samples to be be join called can be specified in two ways:
  - in the sample field of the config.yaml file to be provided as input. Complete path to the gvcf file needs to be provided
- - in the project field of the config.yaml file to be provided as input. In this case NGI-specific folder structure is assumed.
  - a file named 00_samples.txt in the cwd. If present samples specified in this file will be used instead of those speccified in the config
 
 If run like
@@ -19,6 +22,17 @@ it creates the following folder structure
  - `04_SelectVariants`: extract SNPs and INDELs and run eveluation tool from GATK to prepare VQSR
  - `05_VariantRecalibrator`: first step of VQSR
  - `06_ApplyRecalibration`: second step of VQSR
+
+If run like
+ ``` python joint_variant_calling.py --config config.yaml  --mixed-positions```
+it creates the following folder structure
+ - `00_intervals`: optional see Intervals section
+ - `00_samples.txt`: samples that are processed (i.e., samples that are join called)
+ - `01_CombineGVCFs`: step one is CombineGVCFs, batching gvcf files together
+ - `02_GenotypeGVCFs`: then run GenotypeGVCFs
+ - `03_CatVariants`: merge the gvcfs into one in case computation has been spread out into intervals (see Intervals section)
+ - `04_VQSR`: VQSR step executed as explained in http://gatkforums.broadinstitute.org/gatk/discussion/2805/howto-recalibrate-variant-quality-scores-run-vqsr
+
 
 Folders 01, 02, ..., 06 are all organised in the same way:
  - `sbatch`: sbatch files to be submitted to the slurm queue (Uppmax assumed)
